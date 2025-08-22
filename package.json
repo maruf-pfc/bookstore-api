@@ -1,0 +1,30 @@
+{
+  "name": "bookstore-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.12.1",
+  "private": true,
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@types/bun": "latest",
+    "eslint": "^9.33.0",
+    "globals": "^16.3.0",
+    "jiti": "^2.5.1",
+    "typescript-eslint": "^8.40.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.44.4",
+    "express": "^5.1.0",
+    "prettier": "^3.6.2"
+  }
+}

@@ -3,7 +3,9 @@
 import { type Config } from "prettier";
 
 const config: Config = {
-  trailingComma: "none",
+  trailingComma: "all",
+  semi: true,
+  singleQuote: true
 };
 
 export default config;

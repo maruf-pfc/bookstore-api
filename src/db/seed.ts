@@ -17,6 +17,15 @@ export const seed = async () => {
       ('1984', 'George Orwell', 9.99)
     ON CONFLICT DO NOTHING;
   `);
-
-  console.log('✅ Seed completed');
 };
+
+(async () => {
+  try {
+    await seed();
+    console.log('✅ Seed completed');
+  } catch (err) {
+    console.error(err);
+  } finally {
+    await pool.end();
+  }
+})();

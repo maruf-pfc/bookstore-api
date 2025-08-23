@@ -29,3 +29,14 @@ export const createTables = async () => {
     );
   `);
 };
+
+(async () => {
+  try {
+    await createTables();
+    console.log('✅ Tables created');
+  } catch (err) {
+    console.error(err);
+  } finally {
+    await pool.end();
+  }
+})();

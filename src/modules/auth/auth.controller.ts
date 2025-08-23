@@ -1,6 +1,7 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import * as authService from './auth.service';
 import { z } from 'zod';
+import { refreshAccessToken } from './auth.service';
 
 export const registerSchema = z.object({
   name: z.string().nonempty('Name is required'),
@@ -10,7 +11,7 @@ export const registerSchema = z.object({
 });
 
 
-const loginSchema = z.object({
+export const loginSchema = z.object({
   email: z.string().email('Invalid email'),
   password: z.string().min(8, 'Password too short'),
 });
@@ -32,5 +33,17 @@ export const login = async (req: Request, res: Response) => {
     res.json({ ok: true, ...data });
   } catch (err: any) {
     res.status(400).json({ ok: false, error: err.message });
+  }
+};
+
+export const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) return res.status(400).json({ ok: false, error: 'Refresh token required' });
+
+    const tokens = await refreshAccessToken(refreshToken);
+    res.json({ ok: true, ...tokens });
+  } catch (err) {
+    next(err);
   }
 };

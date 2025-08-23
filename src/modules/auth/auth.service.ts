@@ -1,6 +1,6 @@
 import { pool } from '../../config/db';
 import { hashPassword, verifyPassword } from '../../utils/passwords';
-import { signAccessToken, signRefreshToken, JwtPayload } from '../../utils/jwt';
+import { signAccessToken, signRefreshToken, JwtPayload, verifyRefreshToken } from '../../utils/jwt';
 import { AppError } from '../../utils/errorResponse';
 
 export type User = {
@@ -114,6 +114,9 @@ export const login = async (email: string, password: string) => {
   const accessToken = signAccessToken(payload);
   const refreshToken = signRefreshToken(payload);
 
+  // Save refresh token in DB
+  await pool.query('UPDATE users SET refresh_token=$1 WHERE id=$2', [refreshToken, user.id]);
+
   return {
     accessToken,
     refreshToken,
@@ -124,4 +127,25 @@ export const login = async (email: string, password: string) => {
       role: user.role,
     },
   };
+};
+
+export const refreshAccessToken = async (token: string) => {
+  try {
+    const payload = verifyRefreshToken(token); // will throw if expired/invalid
+
+    // check if token matches the one stored in DB
+    const { rows } = await pool.query('SELECT * FROM users WHERE id=$1 AND refresh_token=$2', [payload.sub, token]);
+    const user = rows[0];
+    if (!user) throw new AppError('Invalid refresh token', 401);
+
+    const newAccessToken = signAccessToken({ sub: user.id, role: user.role });
+    const newRefreshToken = signRefreshToken({ sub: user.id, role: user.role });
+
+    // update refresh token in DB
+    await pool.query('UPDATE users SET refresh_token=$1 WHERE id=$2', [newRefreshToken, user.id]);
+
+    return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+  } catch (err) {
+    throw new AppError('Refresh token expired or invalid', 401);
+  }
 };

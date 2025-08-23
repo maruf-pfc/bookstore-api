@@ -10,7 +10,9 @@ export const createTables = async () => {
       role VARCHAR(20) NOT NULL DEFAULT 'CUSTOMER',
       failed_attempts INT DEFAULT 0,
       lock_until TIMESTAMP NULL,
-      created_at TIMESTAMP DEFAULT NOW()
+      refresh_token TEXT NULL,         -- store refresh token for JWT
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
     );
     
     CREATE TABLE IF NOT EXISTS books (
@@ -20,7 +22,8 @@ export const createTables = async () => {
       price NUMERIC(10, 2) NOT NULL,
       stock INT NOT NULL DEFAULT 0,   -- track stock quantity
       is_active BOOLEAN DEFAULT true, -- mark unavailable instead of deleting
-      created_at TIMESTAMP DEFAULT NOW()
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
     );
 
     CREATE TABLE IF NOT EXISTS orders (
@@ -28,7 +31,8 @@ export const createTables = async () => {
       user_id INT REFERENCES users(id) ON DELETE CASCADE,
       total NUMERIC(10, 2) NOT NULL,
       status VARCHAR(20) NOT NULL DEFAULT 'PENDING', -- PENDING, PAID, CANCELLED
-      created_at TIMESTAMP DEFAULT NOW()
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
     );
 
     CREATE TABLE IF NOT EXISTS order_items (

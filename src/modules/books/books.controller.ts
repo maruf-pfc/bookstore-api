@@ -1,17 +1,44 @@
 import { Request, Response, NextFunction } from 'express';
-import * as booksService from './books.service';
 import { z } from 'zod';
+import * as booksService from './books.service';
 
-const bookSchema = z.object({
-  title: z.string().min(1),
-  author: z.string().min(1),
-  price: z.number().positive(),
+// Zod schemas
+const createBookSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  author: z.string().min(1, 'Author is required'),
+  price: z.coerce.number().positive('Price must be a positive number'),
+  stock: z.coerce.number().min(0).optional(),
+  is_active: z.boolean().optional(),
+});
+
+const updateBookSchema = z.object({
+  title: z.string().min(1).optional(),
+  author: z.string().min(1).optional(),
+  price: z.coerce.number().positive().optional(),
+  stock: z.coerce.number().min(0).optional(),
+  is_active: z.boolean().optional(),
 });
 
 export const getBooks = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const books = await booksService.getAllBooks();
-    res.status(200).json({ data: books, ok: true });
+    res.status(200).json({ ok: true, data: books });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getBookById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({ ok: false, error: 'Invalid book id' });
+    }
+
+    const book = await booksService.getBookById(id);
+    if (!book) return res.status(404).json({ ok: false, error: 'Book not found' });
+
+    res.json({ ok: true, data: book });
   } catch (err) {
     next(err);
   }
@@ -19,9 +46,46 @@ export const getBooks = async (_req: Request, res: Response, next: NextFunction)
 
 export const createBook = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const validated = bookSchema.parse(req.body);
-    const book = await booksService.addBook(validated);
-    res.status(201).json({ data: book, ok: true });
+    const parsed = createBookSchema.parse(req.body);
+    const created = await booksService.createBook(parsed);
+    res.status(201).json({ ok: true, data: created });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateBook = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({ ok: false, error: 'Invalid book id' });
+    }
+
+    const parsed = updateBookSchema.parse(req.body);
+    if (Object.keys(parsed).length === 0) {
+      return res.status(400).json({ ok: false, error: 'Nothing to update' });
+    }
+
+    const updated = await booksService.updateBook(id, parsed);
+    if (!updated) return res.status(404).json({ ok: false, error: 'Book not found' });
+
+    res.json({ ok: true, data: updated });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteBook = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({ ok: false, error: 'Invalid book id' });
+    }
+
+    const deleted = await booksService.deleteBook(id);
+    if (!deleted) return res.status(404).json({ ok: false, error: 'Book not found' });
+
+    res.json({ ok: true, data: deleted });
   } catch (err) {
     next(err);
   }

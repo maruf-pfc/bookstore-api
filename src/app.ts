@@ -6,8 +6,7 @@ import { pool } from './config/db';
 import { errorHandler } from './middlewares/error';
 import { rateLimiter } from './middlewares/rateLimit';
 import { logger } from './lib/logger';
-import booksRoutes from './modules/books/books.routes';
-import authRoutes from './modules/auth/auth.routes';
+import routes from './routes';
 
 export const app = express();
 
@@ -30,12 +29,13 @@ app.use((req, _res, next) => {
   next();
 });
 
-// Health check
-app.get('/health', (_req, res) => res.json({ ok: true }));
-
 // All routes
-app.use('/api/books', booksRoutes);
-app.use('/api/auth', authRoutes);
+app.use('/api/v1', routes);
+
+// Health check
+app.get('/health', (_req, res) => {
+  res.status(200).json({ ok: true, status: 'UP' });
+});
 
 // Error handler
 app.use(errorHandler);

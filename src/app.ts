@@ -7,6 +7,7 @@ import { errorHandler } from './middlewares/error';
 import { rateLimiter } from './middlewares/rateLimit';
 import { logger } from './lib/logger';
 import booksRoutes from './modules/books/books.routes';
+import authRoutes from './modules/auth/auth.routes';
 
 export const app = express();
 
@@ -34,6 +35,7 @@ app.get('/health', (_req, res) => res.json({ ok: true }));
 
 // All routes
 app.use('/api/books', booksRoutes);
+app.use('/api/auth', authRoutes);
 
 // Error handler
 app.use(errorHandler);

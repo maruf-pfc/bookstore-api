@@ -1,11 +1,19 @@
-import { ZodError } from 'zod';
-import type { ErrorRequestHandler } from 'express';
+import { Request, Response, NextFunction } from 'express';
+import { AppError } from '../utils/errorResponse';
 
-export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
-    if (err instanceof ZodError) {
-        return res.status(400).json({ message: 'Validation error', issues: err.flatten() });
-    }
-    const status = (err?.status as number) || 500;
-    const message = err?.message || 'Internal Server Error';
-    res.status(status).json({ message });
+export const errorHandler = (
+  err: Error | AppError,
+  _req: Request,
+  res: Response,
+  _next: NextFunction
+) => {
+  console.error(err);
+
+  const statusCode = err instanceof AppError ? err.statusCode : 500;
+  const message = err.message || 'Internal Server Error';
+
+  res.status(statusCode).json({
+    success: false,
+    message,
+  });
 };

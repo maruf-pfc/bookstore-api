@@ -6,7 +6,8 @@ export async function GET() {
     const res = await fetch(`${API_BASE}/books`, { cache: "no-store" });
     const data = await res.json();
     return NextResponse.json({ ok: true, upstreamStatus: res.status, sample: data }, { status: 200 });
-  } catch (err: any) {
-    return NextResponse.json({ ok: false, error: err?.message ?? "Ping failed" }, { status: 500 });
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : "Ping failed";
+    return NextResponse.json({ ok: false, error: errorMessage }, { status: 500 });
   }
 }

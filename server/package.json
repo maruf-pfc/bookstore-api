@@ -1,16 +1,16 @@
 {
-  "name": "bookstore-api",
+  "name": "server",
   "version": "1.0.0",
-  "description": "Bookstore API with RBAC using TypeScript, Express, PostgreSQL, and Zod",
+  "description": "Readify is a full-stack bookstore application built with Next.js, Express, PostgreSQL, and TypeScript. It features secure, role-based authentication for browsing, purchasing, and managing books.",
   "main": "dist/index.js",
   "type": "commonjs",
-  "scripts": {
-    "dev": "bun --watch run src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
-    "lint": "eslint 'src/**/*.ts'",
-    "format": "prettier --write .",
-    "test": "jest --passWithNoTests"
+ "scripts": {
+    "dev": "bun --hot src/server.ts",
+    "build": "bun build ./src/server.ts --outdir ./dist --target bun",
+    "start": "bun ./dist/server.js",
+    "lint": "bun eslint 'src/**/*.ts'",
+    "format": "bun prettier --write .",
+    "test": "bun test --passWithNoTests"
   },
   "keywords": [
     "bookstore",

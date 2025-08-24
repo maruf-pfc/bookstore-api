@@ -1,6 +1,7 @@
 {
   "name": "client",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "description": "Readify is a full-stack bookstore application built with Next.js, Express, PostgreSQL, and TypeScript. It features secure, role-based authentication for browsing, purchasing, and managing books.",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",

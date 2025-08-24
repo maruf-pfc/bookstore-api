@@ -1,0 +1,50 @@
+# Use version 3.8 of the Docker Compose file format for modern features.
+version: '3.8'
+
+# Define the services (containers) that make up your application.
+services:
+  # The 'server' service for your Express.js application.
+  server:
+    # Build the Docker image from the Dockerfile in the current directory ('.').
+    build: .
+    # Name the container for easier identification.
+    container_name: readify_server
+    # Map port 5555 on your local machine to port 5555 inside the container.
+    ports:
+      - "5555:5555"
+    # Load environment variables from a .env file in the same directory.
+    # This is where you'll store database credentials and other secrets.
+    env_file:
+      - .env
+    # This service depends on the 'db' service.
+    # Docker Compose will start the 'db' container before starting the 'server' container.
+    depends_on:
+      - db
+    # Automatically restart the container if it fails.
+    restart: on-failure
+
+  # The 'db' service for your PostgreSQL database.
+  db:
+    # Use the official PostgreSQL 16 image with a lightweight Alpine base.
+    image: postgres:16-alpine
+    # Name the container.
+    container_name: readify_db
+    # Load the same .env file for database configuration.
+    # Ensure POSTGRES_USER, POSTGRES_PASSWORD, and POSTGRES_DB are defined in your .env file.
+    env_file:
+      - .env
+    # Mount a volume to persist database data.
+    # This ensures your data is not lost when the container is stopped or removed.
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # Do not expose the database port to the host machine for security.
+    # The 'server' service can communicate with it directly over the internal Docker network.
+    # If you need to connect to the DB from your local machine (e.g., with a GUI tool),
+    # you can uncomment the following lines:
+    # ports:
+    #   - "5432:5432"
+    restart: on-failure
+
+# Define the named volume for data persistence.
+volumes:
+  postgres_data:

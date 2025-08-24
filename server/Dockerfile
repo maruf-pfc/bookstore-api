@@ -6,7 +6,7 @@ FROM oven/bun:1 AS builder
 WORKDIR /app
 
 # Copy package.json and the lockfile to leverage Docker's layer caching
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 
 # Install all dependencies, including devDependencies needed for the build
 RUN bun install --frozen-lockfile
@@ -29,7 +29,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 # Copy package.json and lockfile from the builder stage
-COPY --from=builder /app/package.json /app/bun.lockb ./
+COPY --from=builder /app/package.json /app/bun.lock ./
 
 # Install only the production dependencies to keep the image small
 RUN bun install --frozen-lockfile --production

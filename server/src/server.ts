@@ -8,7 +8,7 @@ const startServer = async () => {
 
     const server = app.listen(env.PORT, () => {
       logger.info(`\n🚀 Server ready on http://localhost:${env.PORT}`);
-      logger.info(`\n📖 API docs available at http://localhost:${env.PORT}/api/v1/docs`);
+      logger.info(`\n📖 API docs available at http://localhost:${env.PORT}/docs`);
     });
 
     // Handle unhandled promise rejections

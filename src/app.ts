@@ -7,6 +7,7 @@ import { errorHandler } from './middlewares/error';
 import { rateLimiter } from './middlewares/rateLimit';
 import { logger } from './lib/logger';
 import routes from './routes';
+import { setupSwagger } from './config/swagger';
 
 export const app = express();
 
@@ -29,6 +30,9 @@ app.use((req, _res, next) => {
   next();
 });
 
+// Swagger docs setup
+setupSwagger(app);
+
 // All routes
 app.use('/api/v1', routes);
 
@@ -44,9 +48,7 @@ app.use(errorHandler);
 export const connectDB = async () => {
   try {
     await pool.connect();
-    logger.info('✅ PostgreSQL connected');
   } catch (err) {
-    logger.error(err, '❌ PostgreSQL connection failed');
     process.exit(1);
   }
 };

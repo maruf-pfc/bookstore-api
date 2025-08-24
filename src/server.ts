@@ -7,7 +7,8 @@ const startServer = async () => {
     await connectDB();
 
     const server = app.listen(env.PORT, () => {
-      logger.info({ port: env.PORT }, `🚀 Server ready on http://localhost:${env.PORT}`);
+      logger.info(`\n🚀 Server ready on http://localhost:${env.PORT}`);
+      logger.info(`\n📖 API docs available at http://localhost:${env.PORT}/api/v1/docs`);
     });
 
     // Handle unhandled promise rejections
